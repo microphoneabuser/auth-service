@@ -7,6 +7,11 @@ import (
 )
 
 func (h *Handler) checkAccess(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.NotFound(w, r)
+		return
+	}
+
 	header := r.Header.Get("Authorization")
 	if header == "" {
 		newErrorResponse(w, "auth header is empty", http.StatusUnauthorized)

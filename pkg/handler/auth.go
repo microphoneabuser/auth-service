@@ -10,6 +10,11 @@ import (
 )
 
 func (h *Handler) getTokens(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.NotFound(w, r)
+		return
+	}
+
 	keys := r.URL.Query()
 
 	id, err := primitive.ObjectIDFromHex(keys.Get("id"))
@@ -44,6 +49,11 @@ func (h *Handler) getTokens(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) refreshTokens(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.NotFound(w, r)
+		return
+	}
+
 	var input refreshInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		newErrorResponse(w, "invalid request body", http.StatusBadRequest)
@@ -76,6 +86,11 @@ func (h *Handler) refreshTokens(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.NotFound(w, r)
+		return
+	}
+
 	user, err := h.service.Authorization.CreateUser(r.Context())
 	if err != nil {
 		newErrorResponse(w, err.Error(), http.StatusInternalServerError)

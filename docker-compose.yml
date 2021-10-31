@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  auth-service:
+    image: auth-service
+    container_name: auth-service
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+      - mongo-express
+    environment:
+      - SIGNING_KEY=dsfjn239njf392n3f0nmk
+      - MONGO_PASSWORD=password
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo:27017/
