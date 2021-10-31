@@ -1,0 +1,10 @@
+port: "8080"
+
+mongo:
+  URI: "mongodb://localhost:27017"
+  Username: "admin"
+  DBName: "auth-db"
+
+jwt:
+  accessTokenTTL: 1
+  refreshTokenTTL: 720
