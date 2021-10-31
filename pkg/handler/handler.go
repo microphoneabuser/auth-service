@@ -18,4 +18,5 @@ func (h *Handler) SetupRoutes() {
 	http.HandleFunc("/auth/get-tokens", h.getTokens)
 	http.HandleFunc("/auth/refresh", h.refreshTokens)
 	http.HandleFunc("/auth/create-user", h.createUser)
+	http.HandleFunc("/api/check-access", h.checkAccess)
 }

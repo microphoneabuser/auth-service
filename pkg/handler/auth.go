@@ -49,7 +49,12 @@ func (h *Handler) refreshTokens(w http.ResponseWriter, r *http.Request) {
 		newErrorResponse(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
-	tokens, err := h.service.Authorization.RefreshTokens(r.Context(), input.Token)
+	id, err := primitive.ObjectIDFromHex(input.Id)
+	if err != nil {
+		newErrorResponse(w, "invalid id field", http.StatusBadRequest)
+		return
+	}
+	tokens, err := h.service.Authorization.RefreshTokens(r.Context(), id, input.Token)
 	if err != nil {
 		newErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -97,6 +102,7 @@ type tokenResponse struct {
 }
 
 type refreshInput struct {
+	Id    string `json:"id" binding:"required"`
 	Token string `json:"token" binding:"required"`
 }
 

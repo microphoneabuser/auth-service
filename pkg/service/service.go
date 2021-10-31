@@ -14,8 +14,9 @@ import (
 
 type Authorization interface {
 	GenerateTokens(ctx context.Context, id primitive.ObjectID) (Tokens, error)
-	RefreshTokens(ctx context.Context, refreshToken string) (Tokens, error)
+	RefreshTokens(ctx context.Context, id primitive.ObjectID, refreshToken string) (Tokens, error)
 	CreateUser(ctx context.Context) (models.User, error)
+	ParseToken(accessToken string) (string, error)
 }
 
 type Service struct {
@@ -25,7 +26,7 @@ type Service struct {
 func NewService(repos *repository.Repository) *Service {
 	accessTokenTTL, refreshTokenTTL := getTTLs()
 	return &Service{
-		Authorization: NewAuthService(repos.Authorization, time.Duration(accessTokenTTL)*time.Hour, time.Duration(refreshTokenTTL)*time.Hour),
+		Authorization: NewAuthService(repos.Authorization, time.Duration(accessTokenTTL)*time.Minute, time.Duration(refreshTokenTTL)*time.Hour),
 	}
 }
 

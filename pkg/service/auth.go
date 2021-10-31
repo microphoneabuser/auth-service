@@ -41,16 +41,15 @@ func (s *AuthService) GenerateTokens(ctx context.Context, id primitive.ObjectID)
 	return s.createSession(ctx, user.ID)
 }
 
-func (s *AuthService) RefreshTokens(ctx context.Context, refreshToken string) (Tokens, error) {
-	var err error
-	refreshTokenBcrypt, err := bcryptToken(refreshToken)
+func (s *AuthService) RefreshTokens(ctx context.Context, id primitive.ObjectID, refreshToken string) (Tokens, error) {
+	user, err := s.repo.GetById(ctx, id)
 	if err != nil {
 		return Tokens{}, err
 	}
 
-	user, err := s.repo.GetByRefreshToken(ctx, refreshTokenBcrypt)
+	err = bcrypt.CompareHashAndPassword([]byte(user.Session.RefreshToken), []byte(refreshToken))
 	if err != nil {
-		return Tokens{}, err
+		return Tokens{}, models.ErrorWrongRefreshToken
 	}
 
 	return s.createSession(ctx, user.ID)
@@ -119,4 +118,16 @@ func bcryptToken(token string) (string, error) {
 		return "", err
 	}
 	return string(bytes), nil
+}
+
+func (s *AuthService) ParseToken(accessToken string) (string, error) {
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(accessToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SIGNING_KEY")), nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%v", claims["sub"]), nil
 }

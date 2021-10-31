@@ -6,5 +6,5 @@ mongo:
   DBName: "auth-db"
 
 jwt:
-  accessTokenTTL: 1
-  refreshTokenTTL: 720
+  accessTokenTTL: 15 #minutes
+  refreshTokenTTL: 720 #hours
